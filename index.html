@@ -11,6 +11,11 @@
 <!-- iframeでPDF表示 -->
 <iframe id="viewer" width="100%" height="500px" style="border:none;"></iframe>
 
+<br>
+
+<h1>BLOB形式</h1>
+<iframe id="viewer1" width="100%" height="500px" style="border:none;"></iframe>
+
 <script>
 const pdfs = [
   './pdf1.pdf',
@@ -34,6 +39,26 @@ function prev() { current = (current - 1 + pdfs.length) % pdfs.length; show(curr
 function next() { current = (current + 1) % pdfs.length; show(current); }
 
 show(0);
+
+async function showPdf() {
+  const response = await fetch('./multipage.pdf');
+  const arrayBuffer = await response.arrayBuffer();
+
+  const blob = new Blob([arrayBuffer], { type: 'application/pdf' });
+  const url = URL.createObjectURL(blob);
+
+  const old = document.getElementById('viewer1');  // viewer-wrapの行を削除
+  const iframe = document.createElement('iframe');
+  iframe.id = 'viewer1';
+  iframe.style.cssText = 'width:100%; height:500px; border:none;';  // heightも合わせる
+  iframe.onload = () => URL.revokeObjectURL(url);
+  iframe.src = url;
+  old.replaceWith(iframe);
+}
+
+showPdf();
+
+
 </script>
 </body>
 </html>
